@@ -51,13 +51,15 @@ export default function MapScreen(props) {
       >
         {data ? <MapView.Marker 
           key={0} 
-          rotation={data.head} 
+          anchor={{x: 0.5, y: 0.5}} 
           coordinate={{latitude: data.lat, longitude: data.lon}}>
+          <View style={{transform: [{ rotate: `${data.head}deg` }] }} >
             <Image 
               source={require('../assets/marker.png')} 
               style={{width: 56, height: 56}} 
-              resizeMode="contain" 
+              resizeMode="center" 
             />
+          </View>
         </MapView.Marker> : null}
       </MapView>
     </View>

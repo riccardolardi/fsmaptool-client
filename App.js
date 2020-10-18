@@ -11,7 +11,7 @@ import SettingsScreen from './components/Settings.js';
 import {
   Text,
   View, 
-  Animated,
+  Platform,
   StatusBar,
   StyleSheet,
   Dimensions,
@@ -43,7 +43,6 @@ export default function App() {
     'Ubuntu-Bold': require('./assets/fonts/Ubuntu/Ubuntu-Bold.ttf')
   });
 
-  const widthAnim = new Animated.Value(56);
   const ipRef = React.useRef(null);
   const hasConnectionRef = React.useRef(false);
 
@@ -71,14 +70,6 @@ export default function App() {
       }
     });
   }, [settingsOpen]);
-
-  React.useEffect(() => {
-    Animated.timing(widthAnim, {
-      toValue: mapSelectionOpen ? 112 : 56,
-      duration: 50,
-      useNativeDriver: false
-    }).start();
-  }, [mapSelectionOpen]);
 
   function startFetchLoop() {
 
@@ -168,7 +159,7 @@ export default function App() {
       alignItems: 'center',
       justifyContent: 'space-around',
       flexDirection: 'row',
-      top: 12 + statusBarHeight,
+      top: 12 + (Platform.OS === 'ios' ? statusBarHeight : 0),
       left: 12,
       right: 12,
       height: hudHeight,
@@ -191,6 +182,7 @@ export default function App() {
       position: 'absolute',
       left: 24,
       bottom: 98,
+      width: mapSelectionOpen ? 112 : 56,
       shadowColor: 'black',
       shadowOffset: {
         width: 0,
@@ -238,7 +230,7 @@ export default function App() {
           <MaterialIcons style={styles.icon} name="my-location" size={42} color="white" /> : 
           <MaterialIcons style={styles.icon} name="location-searching" size={42} color="white" />}
       </TouchableOpacity>
-      <Animated.View style={[styles.mapSelection, {width: widthAnim}]}>
+      <View style={styles.mapSelection}>
         <TouchableOpacity 
           style={styles.alternateMapStyleButton} 
           onPress={() => {
@@ -254,7 +246,7 @@ export default function App() {
         >
           <MaterialCommunityIcons style={styles.icon} name={mapStyle === 0 ? 'map' : 'satellite-variant'} size={42} color={mapSelectionOpen ? 'white' : '#4f9eaf'} />
         </TouchableOpacity>
-      </Animated.View>
+      </View>
       <SettingsScreen 
         settingsOpen={settingsOpen} 
         setSettingsOpen={setSettingsOpen} 
@@ -284,7 +276,7 @@ export default function App() {
           </Text>
         </> : <Text style={styles.waitingLabel}>Waiting for server data...</Text>}
       </View>
-      <StatusBar barStyle="dark-content" backgroundColor="#4f9eaf" translucent={false} />
+      <StatusBar barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'} backgroundColor="#4f9eaf" translucent={false} />
     </View> : null
   );
 }
