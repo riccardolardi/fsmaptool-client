@@ -19,9 +19,10 @@ export default function SettingsScreen(props) {
     setSettingsOpen,
     placeholderIP,
     settingsOpen,
+    setServerIP,
     hudHeight,
-    version,
-    ipRef
+    serverIP,
+    version
   } = props;
 
   function linkClicked() {
@@ -104,8 +105,8 @@ export default function SettingsScreen(props) {
         <Text style={styles.label}>Server IP address:</Text>
         <TextInput 
           style={styles.ipInputField} 
-          onChangeText={v => {ipRef.current = v;}} 
-          value={ipRef.current} 
+          onChangeText={v => setServerIP(v)} 
+          value={serverIP} 
           placeholder={placeholderIP} 
           returnKeyType='done' 
           keyboardType='decimal-pad' 

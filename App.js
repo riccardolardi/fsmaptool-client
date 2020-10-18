@@ -13,6 +13,7 @@ import {
   StatusBar,
   StyleSheet,
   Dimensions,
+  AsyncStorage,
   TouchableOpacity
 } from 'react-native';
 
@@ -28,6 +29,7 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = React.useState(true);
   const [mapSelectionOpen, setMapSelectionOpen] = React.useState(false);
   const [followMarker, setFollowMarker] = React.useState(true);
+  const [serverIP, setServerIP] = React.useState('');
   const [ownIP, setOwnIP] = React.useState(null);
   const [mapStyle, setMapStyle] = React.useState(0);
   const [data, setData] = React.useState(null);
@@ -45,7 +47,14 @@ export default function App() {
 
   React.useEffect(() => {
     getIpAddressAsync().then(ip => setOwnIP(ip));
+    retrieveSettings();
+    startFetchLoop();
   }, []);
+
+  React.useEffect(() => {
+    ipRef.current = serverIP;
+    if (isIp(serverIP)) storeSettings();
+  }, [serverIP]);
 
   React.useEffect(() => {
     ScreenOrientation.getOrientationAsync().then(orientation => {
@@ -64,6 +73,58 @@ export default function App() {
       useNativeDriver: false
     }).start();
   }, [mapSelectionOpen]);
+
+  function startFetchLoop() {
+
+    if (!isIp(ipRef.current)) {
+      setTimeout(() => startFetchLoop(), 10000);
+      return;
+    }
+
+    const fetchTimeout = (url, ms, { signal, ...options } = {}) => {
+      const controller = new AbortController();
+      const promise = fetch(url, { signal: controller.signal, ...options });
+      if (signal) signal.addEventListener('abort', () => controller.abort());
+      const timeout = setTimeout(() => controller.abort(), ms);
+      return promise.finally(() => clearTimeout(timeout));
+    };
+
+    fetchTimeout(`http://${ipRef.current}:${port}/data`, 3000, { signal: fetchAbortCtrl.signal })
+      .then(response => response.json())
+      .then(data => {
+        hasConnectionRef.current = true;
+        setData(data);
+        setError(null);
+        setTimeout(() => startFetchLoop(), 1000);
+      })
+      .catch(error => {
+        setError(error);
+        hasConnectionRef.current = false;
+        setTimeout(() => startFetchLoop(), 10000);
+        if (error.name === 'AbortError') {
+          console.log('Fetch timed out, aborted.', ipRef.current);
+        } else {
+          console.error('Some weird ass network error happened', ipRef.current, error);
+        }
+      });
+  }
+
+  storeSettings = async () => {
+    try {
+      await AsyncStorage.setItem('ip', serverIP);
+    } catch (error) {
+      console.error('Error saving data', error);
+    }
+  };
+
+  retrieveSettings = async () => {
+    try {
+      const ip = await AsyncStorage.getItem('ip');
+      if (ip !== null) setServerIP(ip);
+    } catch (error) {
+      console.error('Error retrieving data', error);
+    }
+  };
 
   const styles = StyleSheet.create({
     container: {
@@ -189,7 +250,8 @@ export default function App() {
       <SettingsScreen 
         settingsOpen={settingsOpen} 
         setSettingsOpen={setSettingsOpen} 
-        ipRef={ipRef} 
+        serverIP={serverIP} 
+        setServerIP={setServerIP} 
         placeholderIP={ownIP} 
         statusBarHeight={statusBarHeight} 
         hudHeight={hudHeight} 
