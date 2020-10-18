@@ -52,14 +52,8 @@ export default function MapScreen(props) {
         {data ? <MapView.Marker 
           key={0} 
           rotation={data.head} 
-          coordinate={{latitude: data.lat, longitude: data.lon}}>
-          <Image 
-            source={require('../assets/marker.png')} 
-            style={{width: 56, height: 56}} 
-            resizeMode="center" 
-            resizeMethod="resize" 
-          />
-        </MapView.Marker> : null}
+          coordinate={{latitude: data.lat, longitude: data.lon}}
+          image={require('../assets/marker.png')} /> : null}
       </MapView>
     </View>
   );
