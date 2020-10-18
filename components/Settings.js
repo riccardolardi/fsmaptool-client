@@ -35,7 +35,7 @@ export default function SettingsScreen(props) {
       left: 12,
       right: 12,
       top: 24 + statusBarHeight + hudHeight,
-      bottom: 12,
+      bottom: -12,
       borderRadius: 6,
       backgroundColor: 'white',
       shadowColor: 'black',
@@ -44,7 +44,8 @@ export default function SettingsScreen(props) {
         height: 2,
       },
       shadowOpacity: 0.5,
-      shadowRadius: 3.84
+      shadowRadius: 3.84,
+      overflow: 'hidden'
     },
     ipInputField: {
       width: '100%',
@@ -52,6 +53,7 @@ export default function SettingsScreen(props) {
       borderRadius: 6,
       color: '#4f9eaf',
       borderColor: 'silver',
+      backgroundColor: 'white',
       borderWidth: 1,
       padding: 6
     },
@@ -61,9 +63,11 @@ export default function SettingsScreen(props) {
       marginBottom: 6
     },
     version: {
+      color: 'grey',
       marginBottom: 12
     },
     title: {
+      fontFamily: 'Ubuntu-Bold',
       fontSize: 36,
       color: '#4f9eaf',
       fontWeight: 'bold'
@@ -72,11 +76,12 @@ export default function SettingsScreen(props) {
       position: 'absolute',
       width: '100%',
       height: '60%',
-      bottom: -36,
-      width: '100%',
-      resizeMode: 'cover'
+      bottom: -24,
+      resizeMode: 'cover',
+      zIndex: -1
     },
     linkLabel: {
+      color: '#4f9eaf',
       marginTop: 16,
       marginBottom: 6,
     },
@@ -91,9 +96,6 @@ export default function SettingsScreen(props) {
       color: 'white',
       fontWeight: 'bold',
       zIndex: 10
-    },
-    byebye: {
-
     }
   });
 

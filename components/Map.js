@@ -52,7 +52,7 @@ export default function MapScreen(props) {
           key={0} 
           rotation={data.head} 
           coordinate={{latitude: data.lat, longitude: data.lon}} 
-          image={require('../assets/icon.png')} 
+          image={require('../assets/marker.png')} 
         /> : null}
       </MapView>
     </View>

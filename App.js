@@ -4,6 +4,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { getIpAddressAsync } from 'expo-network';
+import { useFonts } from 'expo-font';
 import MapScreen from './components/Map.js';
 import SettingsScreen from './components/Settings.js';
 import {
@@ -37,6 +38,10 @@ export default function App() {
   //   lat: 47.5596, lon: 7.5886, head: 231.1313, alt: 1213.131313, speed: 133.1313
   // });
 
+  const [loaded] = useFonts({
+    'Ubuntu-Bold': require('./assets/fonts/Ubuntu/Ubuntu-Bold.ttf')
+  });
+
   const widthAnim = new Animated.Value(56);
   const ipRef = React.useRef(null);
   const hasConnectionRef = React.useRef(false);
@@ -59,7 +64,7 @@ export default function App() {
   React.useEffect(() => {
     ScreenOrientation.getOrientationAsync().then(orientation => {
       if (settingsOpen) {
-        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
       } else {
         ScreenOrientation.unlockAsync();
       }
@@ -214,7 +219,7 @@ export default function App() {
     }
   });
 
-  return (
+  return (loaded ? 
     <View styles={styles.container}>
       <MapScreen 
         data={data} 
@@ -276,7 +281,7 @@ export default function App() {
           </Text>
         </> : <Text style={styles.waitingLabel}>Waiting for server data...</Text>}
       </View>
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-    </View>
+      <StatusBar barStyle="dark-content" backgroundColor="#4f9eaf" translucent={false} />
+    </View> : null
   );
 }
