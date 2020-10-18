@@ -17,7 +17,7 @@ export default function MapScreen(props) {
   const mapRef = React.useRef(null);
 
   React.useEffect(() => {
-    if (!data || !props.followMarker) return;
+    if (!data || !followMarker) return;
     mapRef.current.animateCamera({
       center: {
         latitude: data.lat,
@@ -27,7 +27,7 @@ export default function MapScreen(props) {
   }, [data]);
 
   function onPanDrag(e) {
-    props.setFollowMarker(false);
+    setFollowMarker(false);
   }
 
   const styles = StyleSheet.create({
@@ -52,8 +52,13 @@ export default function MapScreen(props) {
         {data ? <MapView.Marker 
           key={0} 
           rotation={data.head} 
-          coordinate={{latitude: data.lat, longitude: data.lon}}
-          image={require('../assets/marker.png')} /> : null}
+          coordinate={{latitude: data.lat, longitude: data.lon}}>
+            <Image 
+              source={require('../assets/marker.png')} 
+              style={{width: 56, height: 56}} 
+              resizeMode="contain" 
+            />
+        </MapView.Marker> : null}
       </MapView>
     </View>
   );

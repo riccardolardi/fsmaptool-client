@@ -2,9 +2,9 @@
   "expo": {
     "name": "FS Map Tool",
     "description": "A small tool to know where you're flying in MS Flight Simulator 2020.",
-    "privacy": "unlisted",
+    "privacy": "public",
     "slug": "fsmaptool",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
@@ -19,7 +19,7 @@
     ],
     "ios": {
       "bundleIdentifier": "com.riccardolardi.fsmaptool",
-      "buildNumber": "1.0.3",
+      "buildNumber": "1.0.4",
       "supportsTablet": true,
       "requireFullScreen": true
     },
