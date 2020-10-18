@@ -53,11 +53,15 @@ export default function MapScreen(props) {
           key={0} 
           anchor={{x: 0.5, y: 0.5}} 
           coordinate={{latitude: data.lat, longitude: data.lon}}>
-          <View style={{transform: [{ rotate: `${data.head}deg` }] }} >
+          <View 
+            style={{
+              transform: [{ rotate: `${data ? data?.head : 0}deg` }],
+              width: 56, height: 56 
+            }}>
             <Image 
               source={require('../assets/marker.png')} 
-              style={{width: 56, height: 56}} 
-              resizeMode="center" 
+              resizeMode='contain' 
+              style={{ flex: 1, width: undefined, height: undefined }} 
             />
           </View>
         </MapView.Marker> : null}
