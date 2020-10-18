@@ -1,6 +1,7 @@
 import React from 'react';
 import Constants from 'expo-constants';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { useKeepAwake } from 'expo-keep-awake';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { getIpAddressAsync } from 'expo-network';
@@ -218,6 +219,8 @@ export default function App() {
       borderRadius: 28,
     }
   });
+
+  useKeepAwake();
 
   return (loaded ? 
     <View styles={styles.container}>
