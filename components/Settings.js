@@ -26,7 +26,7 @@ export default function SettingsScreen(props) {
   } = props;
 
   function linkClicked() {
-    Linking.openURL('https://www.fsmaptool.com');
+    Linking.openURL('http://www.fsmaptool.com');
   }
 
   const styles = StyleSheet.create({
