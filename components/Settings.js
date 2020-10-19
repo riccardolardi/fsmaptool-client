@@ -104,7 +104,7 @@ export default function SettingsScreen(props) {
     <View style={styles.container} animation={settingsOpen ? 'bounceInUp' : 'bounceOutDown'}>
       <View style={{flex: 1, padding: 12}}>
         <Text style={styles.title}>FS Map Tool</Text>
-        <Text style={styles.version}>{`Client v${version ? version : '0.0.1'}`}</Text>
+        <Text style={styles.version}>{`Client v${version ? version : '1.0.0'}`}</Text>
         <Text style={styles.label}>Server IP address:</Text>
         <TextInput 
           style={styles.ipInputField} 
