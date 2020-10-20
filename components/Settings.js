@@ -101,7 +101,11 @@ export default function SettingsScreen(props) {
   });
 
   return (
-    <View style={styles.container} animation={settingsOpen ? 'bounceInUp' : 'bounceOutDown'}>
+    <View 
+      style={styles.container} 
+      animation={settingsOpen ? 'bounceInUp' : 'bounceOutDown'} 
+      pointerEvents={settingsOpen ? 'auto' : 'none'} 
+    >
       <View style={{flex: 1, padding: 12}}>
         <Text style={styles.title}>FS Map Tool</Text>
         <Text style={styles.version}>{`Client v${version ? version : '1.0.0'}`}</Text>
