@@ -5,6 +5,7 @@ import { useKeepAwake } from 'expo-keep-awake';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { getIpAddressAsync } from 'expo-network';
+import { getDeviceTypeAsync } from 'expo-device';
 import { useFonts } from 'expo-font';
 import MapScreen from './components/Map.js';
 import SettingsScreen from './components/Settings.js';
@@ -34,6 +35,7 @@ export default function App() {
   const [serverIP, setServerIP] = React.useState('');
   const [ownIP, setOwnIP] = React.useState(null);
   const [mapStyle, setMapStyle] = React.useState(0);
+  const [deviceType, setDeviceType] = React.useState(undefined);
   const [data, setData] = React.useState(null);
   // const [data, setData] = React.useState({
   //   lat: 47.5596, lon: 7.5886, head: 231.1313, alt: 1213.131313, speed: 133.1313
@@ -54,6 +56,9 @@ export default function App() {
     getIpAddressAsync().then(ip => setOwnIP(ip));
     retrieveSettings();
     startFetchLoop();
+    getDeviceTypeAsync().then(deviceType => {
+      setDeviceType(deviceType === 0 ? 'phone' : 'tablet');
+    });
   }, []);
 
   React.useEffect(() => {
@@ -256,6 +261,7 @@ export default function App() {
         statusBarHeight={statusBarHeight} 
         hudHeight={hudHeight} 
         ScreenOrientation={ScreenOrientation} 
+        deviceType={deviceType} 
       />
       <TouchableOpacity 
         style={[styles.settingsButton, styles.button]} 
@@ -264,7 +270,7 @@ export default function App() {
         <MaterialIcons style={styles.icon} name={settingsOpen ? 'check' : 'settings'} size={42} color={settingsOpen ? 'white' : '#4f9eaf'} />
       </TouchableOpacity>
       <View style={styles.hud}>
-        {data ? <>
+        {data && hasConnectionRef.current ? <>
           <Text style={styles.hudLabel}>Heading:
             <Text style={styles.hudValue}> {parseInt(data?.head)}</Text>
           </Text>

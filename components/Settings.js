@@ -21,17 +21,21 @@ export default function SettingsScreen(props) {
     placeholderIP,
     settingsOpen,
     setServerIP,
+    deviceType,
     hudHeight,
     serverIP,
     version
   } = props;
 
   function linkClicked() {
-    Linking.openURL('http://www.fsmaptool.com');
+    Linking.openURL('https://fsmaptool.com');
   }
 
   const styles = StyleSheet.create({
     container: {
+      flex: 1,
+      flexDirection: 'column',
+      alignItems: 'center',
       position: 'absolute',
       left: 12,
       right: 12,
@@ -49,7 +53,6 @@ export default function SettingsScreen(props) {
       overflow: 'hidden'
     },
     ipInputField: {
-      width: '100%',
       height: 46,
       borderRadius: 6,
       color: '#4f9eaf',
@@ -74,12 +77,12 @@ export default function SettingsScreen(props) {
       fontWeight: 'bold'
     },
     logo: {
-      position: 'absolute',
       width: '100%',
       height: '60%',
-      bottom: -24,
       resizeMode: 'cover',
-      zIndex: -1
+      bottom: -24,
+      zIndex: -1,
+      overflow: 'visible'
     },
     linkLabel: {
       color: '#4f9eaf',
@@ -106,7 +109,7 @@ export default function SettingsScreen(props) {
       animation={settingsOpen ? 'bounceInUp' : 'bounceOutDown'} 
       pointerEvents={settingsOpen ? 'auto' : 'none'} 
     >
-      <View style={{flex: 1, padding: 12}}>
+      <View style={{flex: 1, padding: 12, width: '100%', maxWidth: 480}}>
         <Text style={styles.title}>FS Map Tool</Text>
         <Text style={styles.version}>{`Client v${version ? version : '1.0.0'}`}</Text>
         <Text style={styles.label}>Server IP address:</Text>
