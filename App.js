@@ -37,9 +37,6 @@ export default function App() {
   const [mapStyle, setMapStyle] = React.useState(0);
   const [deviceType, setDeviceType] = React.useState(undefined);
   const [data, setData] = React.useState(null);
-  // const [data, setData] = React.useState({
-  //   lat: 47.5596, lon: 7.5886, head: 231.1313, alt: 1213.131313, speed: 133.1313
-  // });
 
   const [loaded] = useFonts({
     'Ubuntu-Bold': require('./assets/fonts/Ubuntu/Ubuntu-Bold.ttf')
@@ -62,8 +59,9 @@ export default function App() {
   }, []);
 
   React.useEffect(() => {
+    storeSettings();
     ipRef.current = serverIP;
-    if (isIp(serverIP)) storeSettings();
+    if (serverIP === '99999') startDemoMode();
   }, [serverIP]);
 
   React.useEffect(() => {
@@ -127,6 +125,31 @@ export default function App() {
       console.error('Error retrieving data', error);
     }
   };
+
+  function startDemoMode() {
+    hasConnectionRef.current = true;
+    const then = Date.now();
+    const demoData = {
+      lat: 42.532219,
+      lon: 9.7364273,
+      speed: 172.21,
+      alt: 3212.39,
+      head: 45.0
+    };
+    const interval = setInterval(() => {
+      if (ipRef.current !== '99999') {
+        setData(null);
+        hasConnectionRef.current = false;
+        clearInterval(interval);
+      }
+      const now = Date.now();
+      setData({
+        ...demoData,
+        lat: demoData.lat + ((now - then) * 0.00001),
+        lon: demoData.lon + ((now - then) * 0.00001)
+      });
+    }, 1000);
+  }
 
   const styles = StyleSheet.create({
     container: {
