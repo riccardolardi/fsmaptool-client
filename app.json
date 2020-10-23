@@ -31,7 +31,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "REMOVED_API_KEY"
+          "apiKey": "***REMOVED***"
         }
       }
     },
