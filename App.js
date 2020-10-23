@@ -2,11 +2,11 @@ import React from 'react';
 import Constants from 'expo-constants';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useKeepAwake } from 'expo-keep-awake';
+import { useFonts } from 'expo-font';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { getIpAddressAsync } from 'expo-network';
 import { getDeviceTypeAsync } from 'expo-device';
-import { useFonts } from 'expo-font';
 import MapScreen from './components/Map.js';
 import SettingsScreen from './components/Settings.js';
 import {
@@ -22,7 +22,7 @@ import {
 
 const isIp = require('is-ip');
 const fetchAbortCtrl = new AbortController();
-const version = Constants.nativeAppVersion;
+const version = Constants.manifest.version;
 const statusBarHeight = getStatusBarHeight();
 const hudHeight = 42;
 const port = 12345;
@@ -38,12 +38,12 @@ export default function App() {
   const [deviceType, setDeviceType] = React.useState(undefined);
   const [data, setData] = React.useState(null);
 
+  const ipRef = React.useRef(null);
+  const hasConnectionRef = React.useRef(false);
+
   const [loaded] = useFonts({
     'Ubuntu-Bold': require('./assets/fonts/Ubuntu/Ubuntu-Bold.ttf')
   });
-
-  const ipRef = React.useRef(null);
-  const hasConnectionRef = React.useRef(false);
 
   Dimensions.addEventListener('change', () => {
     StatusBar.setHidden(false);
@@ -125,6 +125,12 @@ export default function App() {
       console.error('Error retrieving data', error);
     }
   };
+
+  function pad(num, size) {
+    num = num.toString();
+    while (num.length < size) num = "0" + num;
+    return num;
+  }
 
   function startDemoMode() {
     hasConnectionRef.current = true;
@@ -295,13 +301,13 @@ export default function App() {
       <View style={styles.hud}>
         {data && hasConnectionRef.current ? <>
           <Text style={styles.hudLabel}>Heading:
-            <Text style={styles.hudValue}> {parseInt(data?.head)}</Text>
+            <Text style={styles.hudValue}> {pad(parseInt(data?.head), 3)}</Text>
           </Text>
           <Text style={styles.hudLabel}>Speed:
-            <Text style={styles.hudValue}> {Math.round((data?.speed + Number.EPSILON) * 100) / 100}</Text>
+            <Text style={styles.hudValue}> {parseInt(data?.speed)}</Text>
           </Text>
           <Text style={styles.hudLabel}>Altitude:
-            <Text style={styles.hudValue}> {Math.round((data?.alt + Number.EPSILON) * 100) / 100}</Text>
+            <Text style={styles.hudValue}> {parseInt(data?.alt)}</Text>
           </Text>
         </> : <Text style={styles.waitingLabel}>Waiting for server data...</Text>}
       </View>

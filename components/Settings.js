@@ -119,7 +119,7 @@ export default function SettingsScreen(props) {
           value={serverIP} 
           placeholder={placeholderIP} 
           returnKeyType='done' 
-          keyboardType='decimal-pad' 
+          keyboardType='numeric' 
           multiline={false} 
           blurOnSubmit={true} 
           clearButtonMode='while-editing' 
