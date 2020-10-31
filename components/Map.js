@@ -11,6 +11,7 @@ export default function MapScreen(props) {
   const { 
     data, 
     mapStyle, 
+    lockHeading,
     followMarker, 
     setFollowMarker 
   } = props;
@@ -22,7 +23,8 @@ export default function MapScreen(props) {
       center: {
         latitude: data.lat,
         longitude: data.lon
-      }
+      },
+      heading: lockHeading ? data.head : 0
     });
   }, [data]);
 
@@ -43,6 +45,18 @@ export default function MapScreen(props) {
         ref={mapRef} 
         style={styles.map} 
         mapType={mapStyle === 0 ? 'standard' : 'hybrid'} 
+        initialCamera={{
+          center: {
+           latitude: 0,
+           longitude: 0
+          },
+          heading: 0,
+          pitch: 0,
+          altitude: 1000000,
+          zoom: 5
+        }} 
+        compassOffset={{ x: -10, y: 64 }} 
+        showsCompass={false} 
         rotateEnabled={false} 
         toolbarEnabled={false} 
         loadingEnabled={true} 
@@ -55,7 +69,7 @@ export default function MapScreen(props) {
           coordinate={{latitude: data.lat, longitude: data.lon}}>
           <View 
             style={{
-              transform: [{ rotate: `${data ? data?.head : 0}deg` }],
+              transform: [{ rotate: `${data && !lockHeading ? data?.head : 0}deg` }],
               width: 56, height: 56 
             }}>
             <Image 

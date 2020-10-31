@@ -111,11 +111,14 @@ export default function SettingsScreen(props) {
     >
       <View style={{flex: 1, padding: 12, width: '100%', maxWidth: 480}}>
         <Text style={styles.title}>FS Map Tool</Text>
-        <Text style={styles.version}>{`Client v${version ? version : '1.0.0'}`}</Text>
+        <Text style={styles.version}>{`Client v${version}`}</Text>
         <Text style={styles.label}>Server IP address:</Text>
         <TextInput 
           style={styles.ipInputField} 
-          onChangeText={v => setServerIP(v)} 
+          onChangeText={val => {
+            val.replaceAll(',', '.');
+            setServerIP(val);
+          }} 
           value={serverIP} 
           placeholder={placeholderIP} 
           returnKeyType='done' 
@@ -131,7 +134,7 @@ export default function SettingsScreen(props) {
           <Text style={styles.linkButton} >www.fsmaptool.com</Text>
         </TouchableOpacity>
       </View>
-      <Image style={styles.logo} source={require('../assets/splash.png')} />
+      <Image style={styles.logo} source={require('../assets/illustration.png')} />
     </View>
   );
 }

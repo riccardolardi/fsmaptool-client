@@ -32,6 +32,7 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = React.useState(true);
   const [mapSelectionOpen, setMapSelectionOpen] = React.useState(false);
   const [followMarker, setFollowMarker] = React.useState(true);
+  const [lockHeading, setLockHeading] = React.useState(false);
   const [serverIP, setServerIP] = React.useState('');
   const [ownIP, setOwnIP] = React.useState(null);
   const [mapStyle, setMapStyle] = React.useState(0);
@@ -168,6 +169,12 @@ export default function App() {
       bottom: 24,
       backgroundColor: followMarker ? '#4f9eaf' : 'silver'
     },
+    lockHeadingButton: {
+      position: 'absolute',
+      right: 24,
+      bottom: 98,
+      backgroundColor: lockHeading ? '#4f9eaf' : 'silver'
+    },
     settingsButton: {
       position: 'absolute',
       left: 24,
@@ -255,6 +262,7 @@ export default function App() {
         mapStyle={mapStyle} 
         followMarker={followMarker} 
         setFollowMarker={setFollowMarker} 
+        lockHeading={lockHeading} 
       />
       <TouchableOpacity 
         style={[styles.autoFollowButton, styles.button]} 
@@ -264,6 +272,16 @@ export default function App() {
           <MaterialIcons style={styles.icon} name="my-location" size={42} color="white" /> : 
           <MaterialIcons style={styles.icon} name="location-searching" size={42} color="white" />}
       </TouchableOpacity>
+      {/*<TouchableOpacity 
+        style={[styles.lockHeadingButton, styles.button]} 
+        onPress={() => {
+          setLockHeading(!lockHeading);
+        }} 
+      >
+        {lockHeading ? 
+          <MaterialCommunityIcons style={styles.icon} name="compass-outline" size={42} color="white" /> : 
+          <MaterialCommunityIcons style={styles.icon} name="compass-off-outline" size={42} color="white" />}
+      </TouchableOpacity>*/}
       <View style={styles.mapSelection}>
         <TouchableOpacity 
           style={styles.alternateMapStyleButton} 
@@ -291,6 +309,7 @@ export default function App() {
         hudHeight={hudHeight} 
         ScreenOrientation={ScreenOrientation} 
         deviceType={deviceType} 
+        version={version} 
       />
       <TouchableOpacity 
         style={[styles.settingsButton, styles.button]} 
