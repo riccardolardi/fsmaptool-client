@@ -13,12 +13,35 @@ export default function MapScreen(props) {
     mapStyle, 
     lockHeading,
     followMarker, 
+    setLockHeading,
     setFollowMarker 
   } = props;
   const mapRef = React.useRef(null);
 
   React.useEffect(() => {
     if (!data || !followMarker) return;
+    animateCamera();
+  }, [data]);
+
+  React.useEffect(() => {
+    if (lockHeading) setFollowMarker(true);
+    animateCamera();
+  }, [lockHeading]);
+
+  React.useEffect(() => {
+    if (!followMarker) {
+      setLockHeading(false);
+    } else {
+      animateCamera();
+    }
+  }, [followMarker]);
+
+  function onPanDrag(e) {
+    setFollowMarker(false);
+  }
+
+  function animateCamera() {
+    if (!data) return;
     mapRef.current.animateCamera({
       center: {
         latitude: data.lat,
@@ -26,10 +49,6 @@ export default function MapScreen(props) {
       },
       heading: lockHeading ? data.head : 0
     });
-  }, [data]);
-
-  function onPanDrag(e) {
-    setFollowMarker(false);
   }
 
   const styles = StyleSheet.create({

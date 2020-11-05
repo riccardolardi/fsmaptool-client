@@ -263,6 +263,7 @@ export default function App() {
         followMarker={followMarker} 
         setFollowMarker={setFollowMarker} 
         lockHeading={lockHeading} 
+        setLockHeading={setLockHeading} 
       />
       <TouchableOpacity 
         style={[styles.autoFollowButton, styles.button]} 
@@ -272,7 +273,7 @@ export default function App() {
           <MaterialIcons style={styles.icon} name="my-location" size={42} color="white" /> : 
           <MaterialIcons style={styles.icon} name="location-searching" size={42} color="white" />}
       </TouchableOpacity>
-      {/*<TouchableOpacity 
+      <TouchableOpacity 
         style={[styles.lockHeadingButton, styles.button]} 
         onPress={() => {
           setLockHeading(!lockHeading);
@@ -281,7 +282,7 @@ export default function App() {
         {lockHeading ? 
           <MaterialCommunityIcons style={styles.icon} name="compass-outline" size={42} color="white" /> : 
           <MaterialCommunityIcons style={styles.icon} name="compass-off-outline" size={42} color="white" />}
-      </TouchableOpacity>*/}
+      </TouchableOpacity>
       <View style={styles.mapSelection}>
         <TouchableOpacity 
           style={styles.alternateMapStyleButton} 
