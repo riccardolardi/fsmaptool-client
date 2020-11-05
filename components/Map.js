@@ -1,10 +1,11 @@
 import React from 'react';
-import MapView from 'react-native-maps';
+import MapView, { Marker, Callout, Polyline } from 'react-native-maps';
+import { Button, Title, Paragraph, Divider } from 'react-native-paper';
 import {
   StyleSheet,
   Image,
-  Text,
-  View
+  View,
+  Text
 } from 'react-native';
 
 export default function MapScreen(props) {
@@ -17,6 +18,8 @@ export default function MapScreen(props) {
     setFollowMarker 
   } = props;
   const mapRef = React.useRef(null);
+  const [markerArray, setMarkerArray] = React.useState([]);
+  const [polylineArray, setPolylineArray] = React.useState([]);
 
   React.useEffect(() => {
     if (!data || !followMarker) return;
@@ -40,6 +43,27 @@ export default function MapScreen(props) {
     setFollowMarker(false);
   }
 
+  function onLongPress(e) {
+    const coordinate = e.nativeEvent.coordinate;
+    const newMarker = {
+      id: markerArray.length,
+      coordinate: coordinate
+    };
+    const newPolyline = {
+      id: markerArray.length,
+      coordinates: [
+        markerArray.length === 0 ? { latitude: data.lat, longitude: data.lon } : markerArray[markerArray.length - 1].coordinate, 
+        newMarker.coordinate
+      ]
+    };
+    setMarkerArray(markerArray.concat(newMarker));
+    // setPolylineArray(polylineArray.concat(newPolyline));
+  }
+
+  function removeMarker(index) {
+    setMarkerArray(markerArray.filter(el => el.id !== index));
+  }
+
   function animateCamera() {
     if (!data) return;
     mapRef.current.animateCamera({
@@ -55,6 +79,19 @@ export default function MapScreen(props) {
     map: {
       width: '100%',
       height: '100%'
+    },
+    markerCallout: {
+      flexDirection: 'row',
+      justifyContent: 'space-between'
+    },
+    markerTitle: {
+      flex: 1,
+      fontSize: 12,
+      paddingRight: 6
+    }, 
+    markerCloseButton: {
+      flex: 1,
+      width: 36
     }
   });
 
@@ -80,9 +117,10 @@ export default function MapScreen(props) {
         toolbarEnabled={false} 
         loadingEnabled={true} 
         moveOnMarkerPress={false} 
-        onPanDrag={e => onPanDrag(e)} 
+        onPanDrag={onPanDrag} 
+        onLongPress={onLongPress} 
       >
-        {data ? <MapView.Marker 
+        {data ? <Marker 
           key={0} 
           anchor={{x: 0.5, y: 0.5}} 
           coordinate={{latitude: data.lat, longitude: data.lon}}>
@@ -97,7 +135,30 @@ export default function MapScreen(props) {
               style={{ flex: 1, width: undefined, height: undefined }} 
             />
           </View>
-        </MapView.Marker> : null}
+        </Marker> : null}
+        {markerArray.length !== 0 && markerArray.map((marker, index) => <Marker 
+          key={index} 
+          coordinate={marker.coordinate} 
+          tracksViewChanges={false} 
+          stopPropagation draggable 
+        ><Callout>
+          <View style={styles.markerCallout}>
+            <Title style={styles.markerTitle}>
+              {`Waypoint #${index + 1}`}
+            </Title>
+            <Button 
+              style={styles.markerCloseButton} 
+              compact 
+              icon="close" 
+              mode="contained" 
+              color="red" 
+              onPress={() => removeMarker(marker.id)} 
+            />
+          </View>
+        </Callout></Marker>)}
+        {polylineArray.length !== 0 && polylineArray.map((polyline, index) => <Polyline
+          coordinates={polyline.coordinates} strokeColor="#ff0000" strokeWidth={2} 
+        />)}
       </MapView>
     </View>
   );
