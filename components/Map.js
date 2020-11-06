@@ -1,7 +1,7 @@
 import React from 'react';
 import MapView, { Marker, Callout, Polyline } from 'react-native-maps';
-import { Button, Title, Paragraph, Divider } from 'react-native-paper';
 import {
+  TouchableOpacity,
   StyleSheet,
   Image,
   View,
@@ -18,12 +18,13 @@ export default function MapScreen(props) {
     setFollowMarker 
   } = props;
   const mapRef = React.useRef(null);
-  const [markerArray, setMarkerArray] = React.useState([]);
-  const [polylineArray, setPolylineArray] = React.useState([]);
+  const waypointArray = React.useRef([]);
+  const polylineArray = React.useRef([]);
+  const [currentWaypointIndex, setCurrentWaypointIndex] = React.useState(0);
 
   React.useEffect(() => {
-    if (!data || !followMarker) return;
-    animateCamera();
+    if (data && followMarker) animateCamera();
+    redrawPolylines();
   }, [data]);
 
   React.useEffect(() => {
@@ -44,24 +45,54 @@ export default function MapScreen(props) {
   }
 
   function onLongPress(e) {
+    if (!data) return;
     const coordinate = e.nativeEvent.coordinate;
-    const newMarker = {
-      id: markerArray.length,
+    const newWaypoint = {
+      id: waypointArray.current.length,
+      active: currentWaypointIndex === waypointArray.current.length - 1,
       coordinate: coordinate
     };
     const newPolyline = {
-      id: markerArray.length,
+      id: waypointArray.current.length,
+      color: 'red',
       coordinates: [
-        markerArray.length === 0 ? { latitude: data.lat, longitude: data.lon } : markerArray[markerArray.length - 1].coordinate, 
-        newMarker.coordinate
+        waypointArray.current.length === 0 ? { latitude: data.lat, longitude: data.lon } : waypointArray.current[waypointArray.current.length - 1].coordinate, 
+        newWaypoint.coordinate
       ]
     };
-    setMarkerArray(markerArray.concat(newMarker));
-    // setPolylineArray(polylineArray.concat(newPolyline));
+    waypointArray.current.push(newWaypoint);
+    polylineArray.current.push(newPolyline);
   }
 
-  function removeMarker(index) {
-    setMarkerArray(markerArray.filter(el => el.id !== index));
+  function redrawPolylines() {
+    if (!waypointArray.current.length || waypointArray.current.length !== polylineArray.current.length) return;
+    polylineArray.current.forEach((polyline, index) => {
+      if (currentWaypointIndex === index) {
+        polyline.coordinates = [
+          { latitude: data.lat, longitude: data.lon },
+          waypointArray.current[currentWaypointIndex].coordinate
+        ];
+      } else {
+        polyline.coordinates = [
+          waypointArray.current[index - 1].coordinate,
+          waypointArray.current[index].coordinate
+        ];
+      }
+    });
+  }
+
+  function moveWaypoint(e) {
+    waypointArray.current.forEach(waypoint => {
+      waypoint.coordinate = parseInt(e.nativeEvent.id) === waypoint.id ? e.nativeEvent.coordinate : waypoint.coordinate;
+    });
+    redrawPolylines();
+  }
+
+  function removeWaypoint(id) {
+    const waypointIndex = waypointArray.current.indexOf(waypointArray.current.find(el => el.id === id));
+    waypointArray.current.splice(waypointIndex, 1);
+    polylineArray.current.splice(waypointIndex, 1);
+    redrawPolylines();
   }
 
   function animateCamera() {
@@ -81,17 +112,27 @@ export default function MapScreen(props) {
       height: '100%'
     },
     markerCallout: {
+      flex: 1,
       flexDirection: 'row',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
     markerTitle: {
-      flex: 1,
       fontSize: 12,
-      paddingRight: 6
+      paddingRight: 12
     }, 
     markerCloseButton: {
-      flex: 1,
-      width: 36
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 32,
+      height: 32,
+      backgroundColor: "red",
+      borderRadius: 4
+    },
+    markerCloseButtonText: {
+      color: '#fff', 
+      fontSize: 16,
+      lineHeight: 34
     }
   });
 
@@ -136,28 +177,32 @@ export default function MapScreen(props) {
             />
           </View>
         </Marker> : null}
-        {markerArray.length !== 0 && markerArray.map((marker, index) => <Marker 
+        {waypointArray.current.length !== 0 && waypointArray.current.map((marker, index) => <Marker 
           key={index} 
+          identifier={String(marker.id)} 
           coordinate={marker.coordinate} 
           tracksViewChanges={false} 
-          stopPropagation draggable 
+          onDrag={e => moveWaypoint(e)} 
+          stopPropagation 
+          draggable 
         ><Callout>
           <View style={styles.markerCallout}>
-            <Title style={styles.markerTitle}>
+            <Text style={styles.markerTitle}>
               {`Waypoint #${index + 1}`}
-            </Title>
-            <Button 
+            </Text>
+            <TouchableOpacity 
               style={styles.markerCloseButton} 
-              compact 
-              icon="close" 
-              mode="contained" 
-              color="red" 
-              onPress={() => removeMarker(marker.id)} 
-            />
+              onPress={() => removeWaypoint(marker.id)} 
+            >
+              <Text style={styles.markerCloseButtonText}>✕</Text>
+            </TouchableOpacity>
           </View>
         </Callout></Marker>)}
-        {polylineArray.length !== 0 && polylineArray.map((polyline, index) => <Polyline
-          coordinates={polyline.coordinates} strokeColor="#ff0000" strokeWidth={2} 
+        {polylineArray.current.length !== 0 && polylineArray.current.map((polyline, index) => <Polyline 
+          key={index} 
+          coordinates={polyline.coordinates} 
+          strokeColor={polyline.color} 
+          strokeWidth={2} 
         />)}
       </MapView>
     </View>
