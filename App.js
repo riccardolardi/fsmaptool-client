@@ -19,6 +19,7 @@ import {
   AsyncStorage,
   TouchableOpacity
 } from 'react-native';
+import { View as AnimView } from 'react-native-animatable';
 
 const isIp = require('is-ip');
 const fetchAbortCtrl = new AbortController();
@@ -33,6 +34,9 @@ export default function App() {
   const [mapSelectionOpen, setMapSelectionOpen] = React.useState(false);
   const [followMarker, setFollowMarker] = React.useState(true);
   const [lockHeading, setLockHeading] = React.useState(false);
+  const [showWaypointOptions, setShowWaypointOptions] = React.useState(false);
+  const [showWaypointOptionsButton, setShowWaypointOptionsButton] = React.useState(false);
+  const [currentWaypointIndex, setCurrentWaypointIndex] = React.useState(1);
   const [serverIP, setServerIP] = React.useState('');
   const [ownIP, setOwnIP] = React.useState(null);
   const [mapStyle, setMapStyle] = React.useState(0);
@@ -41,6 +45,9 @@ export default function App() {
 
   const ipRef = React.useRef(null);
   const hasConnectionRef = React.useRef(false);
+
+  const waypointArray = React.useRef([]);
+  const polylineArray = React.useRef([]);
 
   const [loaded] = useFonts({
     'Ubuntu-Bold': require('./assets/fonts/Ubuntu/Ubuntu-Bold.ttf')
@@ -218,12 +225,61 @@ export default function App() {
     waitingLabel: {
       color: 'white'
     },
-    mapSelection: {
+    waypointOptions: {
       flexDirection: 'row',
+      position: 'absolute',
+      right: 24,
+      top: 92,
+      shadowColor: 'black',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 3.84,
+      borderRadius: 28,
+      backgroundColor: 'white'
+    },
+    showWaypointOptionsButton: {
+      backgroundColor: showWaypointOptions ? '#4f9eaf' : 'white',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 56,
+      height: 56,
+      borderRadius: 28
+    },
+    waypointButtonBack: {
+      display: showWaypointOptions ? 'flex' : 'none',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+    },
+    waypointButtonForward: {
+      display: showWaypointOptions ? 'flex' : 'none',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+    },
+    waypointNumberLabelWrap: {
+      display: showWaypointOptions ? 'flex' : 'none',
+      justifyContent: 'center', 
+      alignItems: 'center',
+      width: 56
+    },
+    waypointNumberLabel: {
+      color: '#4f9eaf',
+      fontSize: 24,
+      fontWeight: 'bold'
+    },
+    mapSelection: {
+      flexDirection: 'row-reverse',
       position: 'absolute',
       left: 24,
       bottom: 98,
-      width: mapSelectionOpen ? 112 : 56,
       shadowColor: 'black',
       shadowOffset: {
         width: 0,
@@ -240,11 +296,10 @@ export default function App() {
       justifyContent: 'center',
       width: 56,
       height: 56,
-      borderRadius: 28,
+      borderRadius: 28
     },
     alternateMapStyleButton: {
-      position: 'absolute',
-      right: 0,
+      display: mapSelectionOpen ? 'flex' : 'none',
       alignItems: 'center',
       justifyContent: 'center',
       width: 56,
@@ -260,11 +315,44 @@ export default function App() {
       <MapScreen 
         data={data} 
         mapStyle={mapStyle} 
+        waypointArray={waypointArray} 
+        polylineArray={polylineArray} 
         followMarker={followMarker} 
         setFollowMarker={setFollowMarker} 
         lockHeading={lockHeading} 
         setLockHeading={setLockHeading} 
+        currentWaypointIndex={currentWaypointIndex} 
+        setCurrentWaypointIndex={setCurrentWaypointIndex} 
+        showWaypointOptionsButton={showWaypointOptionsButton} 
+        setShowWaypointOptionsButton={setShowWaypointOptionsButton} 
       />
+      <AnimView 
+        style={styles.waypointOptions} 
+        animation={showWaypointOptionsButton ? 'bounceInRight' : 'bounceOutRight'} 
+        pointerEvents={showWaypointOptionsButton ? 'auto' : 'none'} 
+      >
+        <TouchableOpacity 
+          style={styles.waypointButtonBack} 
+          onPress={() => setCurrentWaypointIndex(currentWaypointIndex === 1 ? waypointArray.current.length : currentWaypointIndex - 1)} 
+        >
+          <MaterialIcons name="arrow-back" size={42} color='#4f9eaf' />
+        </TouchableOpacity>
+        <View style={styles.waypointNumberLabelWrap}>
+          <Text style={styles.waypointNumberLabel}>{currentWaypointIndex}</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.waypointButtonForward} 
+          onPress={() => setCurrentWaypointIndex(currentWaypointIndex === waypointArray.current.length ? 1 : currentWaypointIndex + 1)} 
+        >
+          <MaterialIcons name="arrow-forward" size={42} color='#4f9eaf' />
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.showWaypointOptionsButton} 
+          onPress={() => setShowWaypointOptions(!showWaypointOptions)} 
+        >
+          <MaterialCommunityIcons style={styles.icon} name="map-marker-path" size={42} color={showWaypointOptions ? 'white' : '#4f9eaf'} />
+        </TouchableOpacity>
+      </AnimView>
       <TouchableOpacity 
         style={[styles.autoFollowButton, styles.button]} 
         onPress={() => setFollowMarker(!followMarker)} 

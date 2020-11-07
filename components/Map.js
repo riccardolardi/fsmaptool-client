@@ -12,15 +12,18 @@ export default function MapScreen(props) {
   const { 
     data, 
     mapStyle, 
-    lockHeading,
+    lockHeading, 
     followMarker, 
-    setLockHeading,
-    setFollowMarker 
+    waypointArray, 
+    polylineArray, 
+    setLockHeading, 
+    setFollowMarker, 
+    currentWaypointIndex, 
+    setCurrentWaypointIndex, 
+    showWaypointOptionsButton, 
+    setShowWaypointOptionsButton 
   } = props;
   const mapRef = React.useRef(null);
-  const waypointArray = React.useRef([]);
-  const polylineArray = React.useRef([]);
-  const [currentWaypointIndex, setCurrentWaypointIndex] = React.useState(0);
 
   React.useEffect(() => {
     if (data && followMarker) animateCamera();
@@ -40,6 +43,11 @@ export default function MapScreen(props) {
     }
   }, [followMarker]);
 
+  React.useEffect(() => {
+    redrawWaypoints();
+    redrawPolylines();
+  }, [currentWaypointIndex]);
+
   function onPanDrag(e) {
     setFollowMarker(false);
   }
@@ -49,7 +57,7 @@ export default function MapScreen(props) {
     const coordinate = e.nativeEvent.coordinate;
     const newWaypoint = {
       id: waypointArray.current.length,
-      active: currentWaypointIndex === waypointArray.current.length - 1,
+      color: 'red',
       coordinate: coordinate
     };
     const newPolyline = {
@@ -62,17 +70,34 @@ export default function MapScreen(props) {
     };
     waypointArray.current.push(newWaypoint);
     polylineArray.current.push(newPolyline);
+    setShowWaypointOptionsButton(true);
+  }
+
+  function redrawWaypoints() {
+    if (!waypointArray.current.length) return;
+    waypointArray.current.forEach((waypoint, index) => {
+      if (index < currentWaypointIndex - 1) {
+        waypoint.color = 'grey';
+      } else {
+        waypoint.color = 'red';
+      }
+    });
   }
 
   function redrawPolylines() {
     if (!waypointArray.current.length || waypointArray.current.length !== polylineArray.current.length) return;
     polylineArray.current.forEach((polyline, index) => {
-      if (currentWaypointIndex === index) {
+      polyline.color = 'red';
+      if (currentWaypointIndex === index + 1) {
         polyline.coordinates = [
           { latitude: data.lat, longitude: data.lon },
-          waypointArray.current[currentWaypointIndex].coordinate
+          waypointArray.current[currentWaypointIndex - 1].coordinate
         ];
       } else {
+        if (index < currentWaypointIndex - 1) {
+          polyline.color = 'transparent';
+          return;
+        }
         polyline.coordinates = [
           waypointArray.current[index - 1].coordinate,
           waypointArray.current[index].coordinate
@@ -93,6 +118,12 @@ export default function MapScreen(props) {
     waypointArray.current.splice(waypointIndex, 1);
     polylineArray.current.splice(waypointIndex, 1);
     redrawPolylines();
+    setShowWaypointOptionsButton(waypointArray.current.length);
+    if (currentWaypointIndex > waypointArray.current.length) {
+      setCurrentWaypointIndex(waypointArray.current.length === 0 ? 1 : waypointArray.current.length);
+      redrawWaypoints();
+      redrawPolylines();
+    }
   }
 
   function animateCamera() {
@@ -179,6 +210,7 @@ export default function MapScreen(props) {
         </Marker> : null}
         {waypointArray.current.length !== 0 && waypointArray.current.map((marker, index) => <Marker 
           key={index} 
+          pinColor={marker.color} 
           identifier={String(marker.id)} 
           coordinate={marker.coordinate} 
           tracksViewChanges={false} 
