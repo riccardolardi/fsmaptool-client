@@ -71,10 +71,12 @@ export default function MapScreen(props) {
     waypointArray.current.push(newWaypoint);
     polylineArray.current.push(newPolyline);
     setShowWaypointOptionsButton(true);
+    redrawWaypoints();
+    redrawPolylines();
   }
 
   function redrawWaypoints() {
-    if (!waypointArray.current.length) return;
+    if (!data || !waypointArray.current.length) return;
     waypointArray.current.forEach((waypoint, index) => {
       if (index < currentWaypointIndex - 1) {
         waypoint.color = 'grey';
@@ -85,7 +87,7 @@ export default function MapScreen(props) {
   }
 
   function redrawPolylines() {
-    if (!waypointArray.current.length || waypointArray.current.length !== polylineArray.current.length) return;
+    if (!data || !waypointArray.current.length || waypointArray.current.length !== polylineArray.current.length) return;
     polylineArray.current.forEach((polyline, index) => {
       polyline.color = 'red';
       if (currentWaypointIndex === index + 1) {
@@ -107,13 +109,16 @@ export default function MapScreen(props) {
   }
 
   function moveWaypoint(e) {
+    // no ID on android... bug!
     waypointArray.current.forEach(waypoint => {
       waypoint.coordinate = parseInt(e.nativeEvent.id) === waypoint.id ? e.nativeEvent.coordinate : waypoint.coordinate;
     });
+    redrawWaypoints();
     redrawPolylines();
   }
 
   function removeWaypoint(id) {
+    // no ID on android... bug!
     const waypointIndex = waypointArray.current.indexOf(waypointArray.current.find(el => el.id === id));
     waypointArray.current.splice(waypointIndex, 1);
     polylineArray.current.splice(waypointIndex, 1);

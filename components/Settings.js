@@ -115,14 +115,10 @@ export default function SettingsScreen(props) {
         <Text style={styles.label}>Server IP address:</Text>
         <TextInput 
           style={styles.ipInputField} 
-          onChangeText={val => {
-            val.replaceAll(',', '.');
-            setServerIP(val);
-          }} 
+          onChangeText={val => setServerIP(val)} 
           value={serverIP} 
           placeholder={placeholderIP} 
           returnKeyType='done' 
-          keyboardType='numeric' 
           multiline={false} 
           blurOnSubmit={true} 
           clearButtonMode='while-editing' 
