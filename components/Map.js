@@ -3,6 +3,7 @@ import MapView, { Marker, Callout, Polyline } from 'react-native-maps';
 import {
   TouchableOpacity,
   StyleSheet,
+  Platform,
   Image,
   View,
   Text
@@ -32,6 +33,7 @@ export default function MapScreen(props) {
 
   React.useEffect(() => {
     if (lockHeading) setFollowMarker(true);
+    if (!lockHeading) mapRef.current.setCamera({heading: 0});
     animateCamera();
   }, [lockHeading]);
 
@@ -108,17 +110,15 @@ export default function MapScreen(props) {
     });
   }
 
-  function moveWaypoint(e) {
-    // no ID on android... bug!
+  function moveWaypoint(e, id) {
     waypointArray.current.forEach(waypoint => {
-      waypoint.coordinate = parseInt(e.nativeEvent.id) === waypoint.id ? e.nativeEvent.coordinate : waypoint.coordinate;
+      waypoint.coordinate = parseInt(id) === waypoint.id ? e.nativeEvent.coordinate : waypoint.coordinate;
     });
     redrawWaypoints();
     redrawPolylines();
   }
 
   function removeWaypoint(id) {
-    // no ID on android... bug!
     const waypointIndex = waypointArray.current.indexOf(waypointArray.current.find(el => el.id === id));
     waypointArray.current.splice(waypointIndex, 1);
     polylineArray.current.splice(waypointIndex, 1);
@@ -152,6 +152,7 @@ export default function MapScreen(props) {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
+      padding: Platform.OS === 'ios' ? 0 : 6
     },
     markerTitle: {
       fontSize: 12,
@@ -162,13 +163,12 @@ export default function MapScreen(props) {
       alignItems: 'center',
       width: 32,
       height: 32,
-      backgroundColor: "red",
+      backgroundColor: 'red',
       borderRadius: 4
     },
     markerCloseButtonText: {
       color: '#fff', 
-      fontSize: 16,
-      lineHeight: 34
+      fontSize: 16
     }
   });
 
@@ -219,10 +219,10 @@ export default function MapScreen(props) {
           identifier={String(marker.id)} 
           coordinate={marker.coordinate} 
           tracksViewChanges={false} 
-          onDrag={e => moveWaypoint(e)} 
+          onDrag={e => moveWaypoint(e, marker.id)} 
           stopPropagation 
           draggable 
-        ><Callout>
+        ><Callout onPress={() => removeWaypoint(marker.id)}>
           <View style={styles.markerCallout}>
             <Text style={styles.markerTitle}>
               {`Waypoint #${index + 1}`}

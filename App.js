@@ -328,7 +328,8 @@ export default function App() {
       />
       <AnimView 
         style={styles.waypointOptions} 
-        animation={showWaypointOptionsButton ? 'bounceInRight' : 'bounceOutRight'} 
+        animation={showWaypointOptionsButton ? 'slideInRight' : 'slideOutRight'} 
+        duration={250} 
         pointerEvents={showWaypointOptionsButton ? 'auto' : 'none'} 
       >
         <TouchableOpacity 
@@ -363,9 +364,7 @@ export default function App() {
       </TouchableOpacity>
       <TouchableOpacity 
         style={[styles.lockHeadingButton, styles.button]} 
-        onPress={() => {
-          setLockHeading(!lockHeading);
-        }} 
+        onPress={() => setLockHeading(!lockHeading)} 
       >
         {lockHeading ? 
           <MaterialCommunityIcons style={styles.icon} name="compass-outline" size={42} color="white" /> : 
