@@ -9,12 +9,12 @@ import {
   Linking,
   Button,
   Image,
-  Text
-} from 'react-native';
-import { View } from 'react-native-animatable';
+  Text,
+} from 'react-native'
+import { View } from 'react-native-animatable'
 
 export default function SettingsScreen(props) {
-  const { 
+  const {
     ScreenOrientation,
     statusBarHeight,
     setSettingsOpen,
@@ -24,11 +24,11 @@ export default function SettingsScreen(props) {
     deviceType,
     hudHeight,
     serverIP,
-    version
-  } = props;
+    version,
+  } = props
 
   function linkClicked() {
-    Linking.openURL('https://fsmaptool.com');
+    Linking.openURL('https://fsmaptool.com')
   }
 
   const styles = StyleSheet.create({
@@ -50,7 +50,7 @@ export default function SettingsScreen(props) {
       },
       shadowOpacity: 0.5,
       shadowRadius: 3.84,
-      overflow: 'hidden'
+      overflow: 'hidden',
     },
     ipInputField: {
       height: 46,
@@ -59,22 +59,22 @@ export default function SettingsScreen(props) {
       borderColor: 'silver',
       backgroundColor: 'white',
       borderWidth: 1,
-      padding: 6
+      padding: 6,
     },
     label: {
       color: '#4f9eaf',
       fontWeight: 'bold',
-      marginBottom: 6
+      marginBottom: 6,
     },
     version: {
       color: 'grey',
-      marginBottom: 12
+      marginBottom: 12,
     },
     title: {
       fontFamily: 'Ubuntu-Bold',
       fontSize: 36,
       color: '#4f9eaf',
-      fontWeight: 'bold'
+      fontWeight: 'bold',
     },
     logo: {
       width: '100%',
@@ -82,7 +82,7 @@ export default function SettingsScreen(props) {
       resizeMode: 'cover',
       bottom: -24,
       zIndex: -1,
-      overflow: 'visible'
+      overflow: 'visible',
     },
     linkLabel: {
       color: '#4f9eaf',
@@ -94,43 +94,49 @@ export default function SettingsScreen(props) {
       justifyContent: 'center',
       height: 42,
       backgroundColor: '#4f9eaf',
-      borderRadius: 6
+      borderRadius: 6,
     },
     linkButton: {
       color: 'white',
       fontWeight: 'bold',
-      zIndex: 10
-    }
-  });
+      zIndex: 10,
+    },
+  })
 
   return (
-    <View 
-      style={styles.container} 
-      animation={settingsOpen ? 'bounceInUp' : 'bounceOutDown'} 
-      pointerEvents={settingsOpen ? 'auto' : 'none'} 
+    <View
+      style={styles.container}
+      animation={settingsOpen ? 'bounceInUp' : 'bounceOutDown'}
+      pointerEvents={settingsOpen ? 'auto' : 'none'}
     >
-      <View style={{flex: 1, padding: 12, width: '100%', maxWidth: 480}}>
+      <View style={{ flex: 1, padding: 12, width: '100%', maxWidth: 480 }}>
         <Text style={styles.title}>FS Map Tool</Text>
         <Text style={styles.version}>{`Client v${version}`}</Text>
         <Text style={styles.label}>Server IP address:</Text>
-        <TextInput 
-          style={styles.ipInputField} 
-          onChangeText={val => setServerIP(val)} 
-          value={serverIP} 
-          placeholder={placeholderIP} 
-          returnKeyType='done' 
-          multiline={false} 
-          blurOnSubmit={true} 
-          clearButtonMode='while-editing' 
+        <TextInput
+          style={styles.ipInputField}
+          onChangeText={(val) => setServerIP(val)}
+          value={serverIP}
+          placeholder={placeholderIP}
+          returnKeyType="done"
+          multiline={false}
+          blurOnSubmit={true}
+          clearButtonMode="while-editing"
         />
-        <Text style={styles.linkLabel}>For support, feedback etc. please visit</Text>
-        <TouchableOpacity 
-          style={styles.linkButtonView} 
-          onPress={() => linkClicked()}>
-          <Text style={styles.linkButton} >www.fsmaptool.com</Text>
+        <Text style={styles.linkLabel}>
+          For support, feedback etc. please visit
+        </Text>
+        <TouchableOpacity
+          style={styles.linkButtonView}
+          onPress={() => linkClicked()}
+        >
+          <Text style={styles.linkButton}>www.fsmaptool.com</Text>
         </TouchableOpacity>
       </View>
-      <Image style={styles.logo} source={require('../assets/illustration.png')} />
+      <Image
+        style={styles.logo}
+        source={require('../assets/illustration.png')}
+      />
     </View>
-  );
+  )
 }
