@@ -23,7 +23,7 @@
     },
     "android": {
       "package": "com.riccardolardi.fsmaptool",
-      "versionCode": 5,
+      "versionCode": 6,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png"
       },
