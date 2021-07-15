@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Platform,
   Image,
+  Alert,
   View,
   Text,
 } from 'react-native'
@@ -14,6 +15,7 @@ export default function MapScreen(props) {
   const {
     data,
     mapStyle,
+    teleport,
     planeIcons,
     lockHeading,
     followMarker,
@@ -61,6 +63,27 @@ export default function MapScreen(props) {
   function onLongPress(e) {
     if (!data) return
     const coordinate = e.nativeEvent.coordinate
+    Alert.alert(
+      "Waypoint / Teleport",
+      "Add new waypoint or teleport?",
+      [
+        {
+          text: "Add waypoint",
+          onPress: () => createWaypoint(coordinate)
+        },
+        {
+          text: "Teleport",
+          onPress: () => teleport(coordinate)
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        }
+      ]
+    )
+  }
+
+  function createWaypoint(coordinate) {
     const newWaypoint = {
       id: waypointArray.current.length,
       color: 'red',
