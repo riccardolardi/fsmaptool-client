@@ -12,6 +12,7 @@ import SettingsScreen from './components/Settings.js'
 import {
   Text,
   View,
+  Alert,
   Platform,
   StatusBar,
   StyleSheet,
@@ -148,6 +149,8 @@ export default function App() {
 
   retrieveSettings = async () => {
     try {
+      const storedVersion = await AsyncStorage.getItem('version')
+      if (storedVersion !== version) versionAlert()
       const newServerIP = await AsyncStorage.getItem('serverIP')
       if (newServerIP !== null) setServerIP(newServerIP)
       const newPlaneIconIndex = await AsyncStorage.getItem('planeIconIndex')
@@ -187,6 +190,29 @@ export default function App() {
         lon: demoData.lon + (now - then) * 0.00001,
       })
     }, 1000)
+  }
+
+  function teleport(coordinate) {
+    fetch(`http://${ipRef.current}:${port}/teleport`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(coordinate)
+    })
+  }
+
+  async function versionAlert() {
+    await AsyncStorage.setItem('version', version)
+    Alert.alert(
+      `Say Hi to v${version} 🎉`,
+      `Welcome to FS Map Tool v${version}!\nPlease make sure to download the updated server application from www.fsmaptool.com\nNew feature: TELEPORT! Long-press on the spot where you want to teleport. Easy as pie!\nHappy teleporting 🚀`,
+      [
+        { text: "OK" }
+      ],
+      { cancelable: false }
+    )
   }
 
   function increasePlaneIconIndex() {
@@ -288,7 +314,7 @@ export default function App() {
       borderRadius: 28,
     },
     waypointButtonBack: {
-      display: showWaypointOptions ? 'flex' : 'none',
+      display: showWaypointOptions && waypointArray.current.length ? 'flex' : 'none',
       alignItems: 'center',
       justifyContent: 'center',
       width: 56,
@@ -296,7 +322,7 @@ export default function App() {
       borderRadius: 28,
     },
     waypointButtonForward: {
-      display: showWaypointOptions ? 'flex' : 'none',
+      display: showWaypointOptions && waypointArray.current.length ? 'flex' : 'none',
       alignItems: 'center',
       justifyContent: 'center',
       width: 56,
@@ -304,7 +330,7 @@ export default function App() {
       borderRadius: 28,
     },
     waypointNumberLabelWrap: {
-      display: showWaypointOptions ? 'flex' : 'none',
+      display: showWaypointOptions && waypointArray.current.length ? 'flex' : 'none',
       justifyContent: 'center',
       alignItems: 'center',
       width: 56,
@@ -354,6 +380,7 @@ export default function App() {
       <MapScreen
         data={data}
         mapStyle={mapStyle}
+        teleport={teleport}
         planeIcons={planeIcons}
         waypointArray={waypointArray}
         polylineArray={polylineArray}
