@@ -47,6 +47,8 @@ export default function App() {
   const [deviceType, setDeviceType] = React.useState(undefined)
   const [data, setData] = React.useState(null)
   const [planeIconIndex, setPlaneIconIndex] = React.useState(0)
+  const [currentRegion, setCurrentRegion] = React.useState(null)
+  const [zoomRegion, setZoomRegion] = React.useState(null)
 
   const ipRef = React.useRef(null)
   const hasConnectionRef = React.useRef(false)
@@ -140,7 +142,7 @@ export default function App() {
 
   storeSettings = async () => {
     try {
-      await AsyncStorage.setItem('serverIP', serverIP)
+      if (serverIP) await AsyncStorage.setItem('serverIP', serverIP)
       await AsyncStorage.setItem('planeIconIndex', String(planeIconIndex))
     } catch (error) {
       console.error('Error saving data', error)
@@ -152,7 +154,7 @@ export default function App() {
       const storedVersion = await AsyncStorage.getItem('version')
       if (storedVersion !== version) versionAlert()
       const newServerIP = await AsyncStorage.getItem('serverIP')
-      if (newServerIP !== null) setServerIP(newServerIP)
+      if (newServerIP) setServerIP(newServerIP)
       const newPlaneIconIndex = await AsyncStorage.getItem('planeIconIndex')
       if (newPlaneIconIndex !== null)
         setPlaneIconIndex(parseInt(newPlaneIconIndex))
@@ -207,7 +209,7 @@ export default function App() {
     await AsyncStorage.setItem('version', version)
     Alert.alert(
       `Say Hi to v${version} 🎉`,
-      `Welcome to FS Map Tool v${version}!\nPlease make sure to download the updated server application from www.fsmaptool.com\nNew feature: TELEPORT! Long-press on the spot where you want to teleport. Easy as pie!\nHappy teleporting 🚀`,
+      `Welcome to FS Map Tool v${version}!\nThis time it's just a small update fixing the IP-address saving bug and adding buttons for zoom. Happy flying! 🚀`,
       [
         { text: "OK" }
       ],
@@ -252,6 +254,18 @@ export default function App() {
       left: 24,
       bottom: 24,
       backgroundColor: settingsOpen ? '#4f9eaf' : 'white',
+    },
+    plusButton: {
+      position: 'absolute',
+      left: 24,
+      top: 72 + (Platform.OS === 'ios' ? statusBarHeight : 0),
+      backgroundColor: 'white',
+    },
+    minusButton: {
+      position: 'absolute',
+      left: 24,
+      top: 146 + (Platform.OS === 'ios' ? statusBarHeight : 0),
+      backgroundColor: 'white',
     },
     button: {
       alignItems: 'center',
@@ -381,6 +395,10 @@ export default function App() {
         data={data}
         mapStyle={mapStyle}
         teleport={teleport}
+        currentRegion={currentRegion}
+        setCurrentRegion={setCurrentRegion}
+        zoomRegion={zoomRegion}
+        setZoomRegion={setZoomRegion}
         planeIcons={planeIcons}
         waypointArray={waypointArray}
         polylineArray={polylineArray}
@@ -506,6 +524,36 @@ export default function App() {
           />
         </TouchableOpacity>
       </View>
+      <TouchableOpacity
+        style={[styles.plusButton, styles.button]}
+        onPress={() => setZoomRegion({
+          ...currentRegion,
+          latitudeDelta: currentRegion.latitudeDelta * 2,
+          longitudeDelta: currentRegion.longitudeDelta * 2
+        })}
+      >
+        <MaterialIcons
+          style={styles.icon}
+          name='add'
+          size={42}
+          color='#4f9eaf'
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.minusButton, styles.button]}
+        onPress={() => setZoomRegion({
+          ...currentRegion,
+          latitudeDelta: currentRegion.latitudeDelta / 2,
+          longitudeDelta: currentRegion.longitudeDelta / 2
+        })}
+      >
+        <MaterialIcons
+          style={styles.icon}
+          name='remove'
+          size={42}
+          color='#4f9eaf'
+        />
+      </TouchableOpacity>
       <SettingsScreen
         settingsOpen={settingsOpen}
         setSettingsOpen={setSettingsOpen}

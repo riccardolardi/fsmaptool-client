@@ -10,12 +10,17 @@ import {
   View,
   Text,
 } from 'react-native'
+import isEqual from 'lodash.isequal'
 
 export default function MapScreen(props) {
   const {
     data,
     mapStyle,
     teleport,
+    zoomRegion,
+    setZoomRegion,
+    currentRegion,
+    setCurrentRegion,
     planeIcons,
     lockHeading,
     followMarker,
@@ -55,6 +60,16 @@ export default function MapScreen(props) {
     redrawWaypoints()
     redrawPolylines()
   }, [currentWaypointIndex])
+
+  React.useEffect(() => {
+    if (zoomRegion && !isEqual(zoomRegion, currentRegion)) {
+      mapRef.current.animateToRegion(zoomRegion)
+    }
+  }, [zoomRegion])
+
+  function onRegionChangeComplete(region) {
+    setCurrentRegion(region)
+  }
 
   function onPanDrag(e) {
     setFollowMarker(false)
@@ -237,6 +252,7 @@ export default function MapScreen(props) {
         moveOnMarkerPress={false}
         onPanDrag={onPanDrag}
         onLongPress={onLongPress}
+        onRegionChangeComplete={onRegionChangeComplete}
       >
         {data ? (
           <Marker
