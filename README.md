@@ -1,6 +1,6 @@
 # FS Map Tool
 
-## A external mobile map tool for MS Flight Simulator 2020
+## A external mobile map tool for MS Flight Simulator 2020/2024
 
 Download on the [App Store](https://apps.apple.com/us/app/id1536321554#?platform=iphone)
 

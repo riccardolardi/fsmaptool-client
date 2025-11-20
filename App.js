@@ -3,10 +3,14 @@ import Constants from 'expo-constants'
 import * as ScreenOrientation from 'expo-screen-orientation'
 import { useKeepAwake } from 'expo-keep-awake'
 import { useFonts } from 'expo-font'
-import { getStatusBarHeight } from 'react-native-status-bar-height'
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context'
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import { getIpAddressAsync } from 'expo-network'
 import { getDeviceTypeAsync } from 'expo-device'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import MapScreen from './components/Map.js'
 import SettingsScreen from './components/Settings.js'
 import {
@@ -17,29 +21,26 @@ import {
   StatusBar,
   StyleSheet,
   Dimensions,
-  AsyncStorage,
   TouchableOpacity,
 } from 'react-native'
 import { View as AnimView } from 'react-native-animatable'
 
 const isIp = require('is-ip')
 const fetchAbortCtrl = new AbortController()
-const version = Constants.manifest.version
-const statusBarHeight = getStatusBarHeight()
+const version = Constants.expoConfig?.version || '1.0.0'
 const hudHeight = 42
 const port = 12345
 
-export default function App() {
+function AppContent() {
+  const insets = useSafeAreaInsets()
   const [error, setError] = React.useState(null)
   const [settingsOpen, setSettingsOpen] = React.useState(true)
   const [mapSelectionOpen, setMapSelectionOpen] = React.useState(false)
   const [followMarker, setFollowMarker] = React.useState(true)
   const [lockHeading, setLockHeading] = React.useState(false)
   const [showWaypointOptions, setShowWaypointOptions] = React.useState(false)
-  const [
-    showWaypointOptionsButton,
-    setShowWaypointOptionsButton,
-  ] = React.useState(false)
+  const [showWaypointOptionsButton, setShowWaypointOptionsButton] =
+    React.useState(false)
   const [currentWaypointIndex, setCurrentWaypointIndex] = React.useState(1)
   const [serverIP, setServerIP] = React.useState('')
   const [ownIP, setOwnIP] = React.useState(null)
@@ -201,7 +202,7 @@ export default function App() {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(coordinate)
+      body: JSON.stringify(coordinate),
     })
   }
 
@@ -209,10 +210,8 @@ export default function App() {
     await AsyncStorage.setItem('version', version)
     Alert.alert(
       `Say Hi to v${version} 🎉`,
-      `Welcome to FS Map Tool v${version}!\nThis time it's just a small update fixing the IP-address saving bug and adding buttons for zoom. Happy flying! 🚀`,
-      [
-        { text: "OK" }
-      ],
+      `Welcome to FS Map Tool v${version}!\nThe app has been updated to support FS 2024 as well as 2020. Happy flying! 🚀`,
+      [{ text: 'OK' }],
       { cancelable: false }
     )
   }
@@ -258,13 +257,13 @@ export default function App() {
     plusButton: {
       position: 'absolute',
       left: 24,
-      top: 72 + (Platform.OS === 'ios' ? statusBarHeight : 0),
+      top: 72 + (Platform.OS === 'ios' ? insets.top : 0),
       backgroundColor: 'white',
     },
     minusButton: {
       position: 'absolute',
       left: 24,
-      top: 146 + (Platform.OS === 'ios' ? statusBarHeight : 0),
+      top: 146 + (Platform.OS === 'ios' ? insets.top : 0),
       backgroundColor: 'white',
     },
     button: {
@@ -286,7 +285,7 @@ export default function App() {
       alignItems: 'center',
       justifyContent: 'space-around',
       flexDirection: 'row',
-      top: 12 + (Platform.OS === 'ios' ? statusBarHeight : 0),
+      top: 12 + (Platform.OS === 'ios' ? insets.top : 0),
       left: 12,
       right: 12,
       height: hudHeight,
@@ -328,7 +327,8 @@ export default function App() {
       borderRadius: 28,
     },
     waypointButtonBack: {
-      display: showWaypointOptions && waypointArray.current.length ? 'flex' : 'none',
+      display:
+        showWaypointOptions && waypointArray.current.length ? 'flex' : 'none',
       alignItems: 'center',
       justifyContent: 'center',
       width: 56,
@@ -336,7 +336,8 @@ export default function App() {
       borderRadius: 28,
     },
     waypointButtonForward: {
-      display: showWaypointOptions && waypointArray.current.length ? 'flex' : 'none',
+      display:
+        showWaypointOptions && waypointArray.current.length ? 'flex' : 'none',
       alignItems: 'center',
       justifyContent: 'center',
       width: 56,
@@ -344,7 +345,8 @@ export default function App() {
       borderRadius: 28,
     },
     waypointNumberLabelWrap: {
-      display: showWaypointOptions && waypointArray.current.length ? 'flex' : 'none',
+      display:
+        showWaypointOptions && waypointArray.current.length ? 'flex' : 'none',
       justifyContent: 'center',
       alignItems: 'center',
       width: 56,
@@ -526,32 +528,36 @@ export default function App() {
       </View>
       <TouchableOpacity
         style={[styles.plusButton, styles.button]}
-        onPress={() => setZoomRegion({
-          ...currentRegion,
-          latitudeDelta: currentRegion.latitudeDelta * 2,
-          longitudeDelta: currentRegion.longitudeDelta * 2
-        })}
+        onPress={() =>
+          setZoomRegion({
+            ...currentRegion,
+            latitudeDelta: currentRegion.latitudeDelta * 2,
+            longitudeDelta: currentRegion.longitudeDelta * 2,
+          })
+        }
       >
         <MaterialIcons
           style={styles.icon}
-          name='add'
+          name="add"
           size={42}
-          color='#4f9eaf'
+          color="#4f9eaf"
         />
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.minusButton, styles.button]}
-        onPress={() => setZoomRegion({
-          ...currentRegion,
-          latitudeDelta: currentRegion.latitudeDelta / 2,
-          longitudeDelta: currentRegion.longitudeDelta / 2
-        })}
+        onPress={() =>
+          setZoomRegion({
+            ...currentRegion,
+            latitudeDelta: currentRegion.latitudeDelta / 2,
+            longitudeDelta: currentRegion.longitudeDelta / 2,
+          })
+        }
       >
         <MaterialIcons
           style={styles.icon}
-          name='remove'
+          name="remove"
           size={42}
-          color='#4f9eaf'
+          color="#4f9eaf"
         />
       </TouchableOpacity>
       <SettingsScreen
@@ -560,7 +566,7 @@ export default function App() {
         serverIP={serverIP}
         setServerIP={setServerIP}
         placeholderIP={ownIP}
-        statusBarHeight={statusBarHeight}
+        statusBarHeight={insets.top}
         hudHeight={hudHeight}
         ScreenOrientation={ScreenOrientation}
         deviceType={deviceType}
@@ -607,4 +613,12 @@ export default function App() {
       />
     </View>
   ) : null
+}
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <AppContent />
+    </SafeAreaProvider>
+  )
 }
