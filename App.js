@@ -257,13 +257,13 @@ function AppContent() {
     plusButton: {
       position: 'absolute',
       left: 24,
-      top: 72 + (Platform.OS === 'ios' ? insets.top : 0),
+      top: 72 + insets.top,
       backgroundColor: 'white',
     },
     minusButton: {
       position: 'absolute',
       left: 24,
-      top: 146 + (Platform.OS === 'ios' ? insets.top : 0),
+      top: 146 + insets.top,
       backgroundColor: 'white',
     },
     button: {
@@ -285,7 +285,7 @@ function AppContent() {
       alignItems: 'center',
       justifyContent: 'space-around',
       flexDirection: 'row',
-      top: 12 + (Platform.OS === 'ios' ? insets.top : 0),
+      top: 12 + insets.top,
       left: 12,
       right: 12,
       height: hudHeight,
@@ -531,8 +531,8 @@ function AppContent() {
         onPress={() =>
           setZoomRegion({
             ...currentRegion,
-            latitudeDelta: currentRegion.latitudeDelta * 2,
-            longitudeDelta: currentRegion.longitudeDelta * 2,
+            latitudeDelta: currentRegion.latitudeDelta / 2,
+            longitudeDelta: currentRegion.longitudeDelta / 2,
           })
         }
       >
@@ -548,8 +548,8 @@ function AppContent() {
         onPress={() =>
           setZoomRegion({
             ...currentRegion,
-            latitudeDelta: currentRegion.latitudeDelta / 2,
-            longitudeDelta: currentRegion.longitudeDelta / 2,
+            latitudeDelta: currentRegion.latitudeDelta * 2,
+            longitudeDelta: currentRegion.longitudeDelta * 2,
           })
         }
       >
