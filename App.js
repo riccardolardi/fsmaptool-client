@@ -233,8 +233,18 @@ function AppContent() {
 
   const styles = StyleSheet.create({
     container: {
+      flex: 1,
       width: Dimensions.get('window').width,
       height: Dimensions.get('window').height,
+    },
+    statusBarBackground: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: Platform.OS === 'android' ? insets.top : 0,
+      backgroundColor: '#4f9eaf',
+      zIndex: 1000,
     },
     autoFollowButton: {
       position: 'absolute',
@@ -392,7 +402,8 @@ function AppContent() {
   useKeepAwake()
 
   return loaded ? (
-    <View styles={styles.container}>
+    <View style={styles.container}>
+      {Platform.OS === 'android' && <View style={styles.statusBarBackground} />}
       <MapScreen
         data={data}
         mapStyle={mapStyle}
