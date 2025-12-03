@@ -1,6 +1,8 @@
 const {
   withGradleProperties,
   withAndroidStyles,
+  withAndroidManifest,
+  withAppBuildGradle,
 } = require('expo/config-plugins')
 
 function withAndroidTargetSdk35(config) {
@@ -11,6 +13,31 @@ function withAndroidTargetSdk35(config) {
       key: 'android.targetSdkVersion',
       value: '35',
     })
+    return config
+  })
+
+  // Set extractNativeLibs to false for 16KB page alignment
+  config = withAndroidManifest(config, (config) => {
+    const mainApplication = config.modResults.manifest.application[0]
+    mainApplication.$['android:extractNativeLibs'] = 'false'
+    return config
+  })
+
+  // Add packaging options for 16KB page alignment
+  config = withAppBuildGradle(config, (config) => {
+    // Check if jniLibs packaging block exists
+    if (!config.modResults.contents.includes('useLegacyPackaging')) {
+      // Find the android { block and add packaging options
+      config.modResults.contents = config.modResults.contents.replace(
+        /android\s*\{/,
+        `android {
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }`
+      )
+    }
     return config
   })
 
