@@ -14,7 +14,7 @@ export default {
       resizeMode: 'contain',
       backgroundColor: '#ffffff',
     },
-    plugins: ['./plugins/withAndroid16KBPages'],
+    plugins: ['./plugins/withAndroid16KBPages', 'expo-font'],
     updates: {
       fallbackToCacheTimeout: 0,
     },
@@ -30,7 +30,7 @@ export default {
     },
     android: {
       package: 'com.riccardolardi.fsmaptool',
-      versionCode: 8,
+      versionCode: 18,
       adaptiveIcon: {
         foregroundImage: './assets/icon.png',
       },
