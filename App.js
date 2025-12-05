@@ -141,7 +141,7 @@ function AppContent() {
       })
   }
 
-  storeSettings = async () => {
+  const storeSettings = async () => {
     try {
       if (serverIP) await AsyncStorage.setItem('serverIP', serverIP)
       await AsyncStorage.setItem('planeIconIndex', String(planeIconIndex))
@@ -150,7 +150,7 @@ function AppContent() {
     }
   }
 
-  retrieveSettings = async () => {
+  const retrieveSettings = async () => {
     try {
       const storedVersion = await AsyncStorage.getItem('version')
       if (storedVersion !== version) versionAlert()
