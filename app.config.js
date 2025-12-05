@@ -30,7 +30,7 @@ export default {
     },
     android: {
       package: 'com.riccardolardi.fsmaptool',
-      versionCode: 18,
+      versionCode: 19,
       adaptiveIcon: {
         foregroundImage: './assets/icon.png',
       },
