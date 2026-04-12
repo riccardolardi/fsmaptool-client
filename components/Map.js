@@ -1,11 +1,9 @@
 import React from 'react'
 import MapView, { Marker, Callout, Polyline } from 'react-native-maps'
 import {
-  TouchableWithoutFeedback,
   TouchableOpacity,
   StyleSheet,
   Platform,
-  Image,
   Alert,
   View,
   Text,
@@ -78,24 +76,20 @@ export default function MapScreen(props) {
   function onLongPress(e) {
     if (!data) return
     const coordinate = e.nativeEvent.coordinate
-    Alert.alert(
-      "Waypoint / Teleport",
-      "Add new waypoint or teleport?",
-      [
-        {
-          text: "Add waypoint",
-          onPress: () => createWaypoint(coordinate)
-        },
-        {
-          text: "Teleport",
-          onPress: () => teleport(coordinate)
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel'
-        }
-      ]
-    )
+    Alert.alert('Waypoint / Teleport', 'Add new waypoint or teleport?', [
+      {
+        text: 'Add waypoint',
+        onPress: () => createWaypoint(coordinate),
+      },
+      {
+        text: 'Teleport',
+        onPress: () => teleport(coordinate),
+      },
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+    ])
   }
 
   function createWaypoint(coordinate) {
@@ -260,24 +254,12 @@ export default function MapScreen(props) {
             anchor={{ x: 0.5, y: 0.5 }}
             coordinate={{ latitude: data.lat, longitude: data.lon }}
             stopPropagation={true}
+            flat={true}
+            rotation={data && !lockHeading ? data?.head : 0}
+            tracksViewChanges={false}
             onPress={() => increasePlaneIconIndex()}
-          >
-            <View
-              style={{
-                transform: [
-                  { rotate: `${data && !lockHeading ? data?.head : 0}deg` },
-                ],
-                width: 56,
-                height: 56,
-              }}
-            >
-              <Image
-                source={planeIcons[planeIconIndex]}
-                resizeMode="contain"
-                style={{ flex: 1, width: undefined, height: undefined }}
-              />
-            </View>
-          </Marker>
+            image={planeIcons[planeIconIndex]}
+          />
         ) : null}
         {waypointArray.current.length !== 0 &&
           waypointArray.current.map((marker, index) => (
