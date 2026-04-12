@@ -7,7 +7,7 @@ export default {
       "A small tool to know where you're flying in MS Flight Simulator 2020/2024.",
     privacy: 'public',
     slug: 'fsmaptool',
-    version: '1.3.2',
+    version: '1.3.3',
     icon: './assets/icon.png',
     splash: {
       image: './assets/splash.png',
@@ -30,7 +30,7 @@ export default {
     },
     android: {
       package: 'com.riccardolardi.fsmaptool',
-      versionCode: 19,
+      versionCode: 20,
       adaptiveIcon: {
         foregroundImage: './assets/icon.png',
       },
