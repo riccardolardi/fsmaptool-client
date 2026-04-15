@@ -539,13 +539,14 @@ function AppContent() {
       </View>
       <TouchableOpacity
         style={[styles.plusButton, styles.button]}
-        onPress={() =>
+        onPress={() => {
+          if (!currentRegion) return
           setZoomRegion({
             ...currentRegion,
             latitudeDelta: currentRegion.latitudeDelta / 2,
             longitudeDelta: currentRegion.longitudeDelta / 2,
           })
-        }
+        }}
       >
         <MaterialIcons
           style={styles.icon}
@@ -556,13 +557,14 @@ function AppContent() {
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.minusButton, styles.button]}
-        onPress={() =>
+        onPress={() => {
+          if (!currentRegion) return
           setZoomRegion({
             ...currentRegion,
             latitudeDelta: currentRegion.latitudeDelta * 2,
             longitudeDelta: currentRegion.longitudeDelta * 2,
           })
-        }
+        }}
       >
         <MaterialIcons
           style={styles.icon}
